@@ -81,7 +81,7 @@ bool BPNeuralNet<Layers...>::train(const InMatrix& input, OutMatrix& output, int
         double aberration = m_aberrmx.subtract(output, layerN).squariance() / 2;
         if (aberration < m_aberration) return true;
         /// 4. 反向修正
-        deltaN.multiply(m_aberrmx, output.foreach(dlogsig));
+        deltaN.multiply(m_aberrmx, layerN.foreach(dlogsig));
         #define J sizeof...(Layers) - I - 2
         expander {(reverse(std::get<J>(m_layers),
                            std::get<J + 1>(m_layers),
