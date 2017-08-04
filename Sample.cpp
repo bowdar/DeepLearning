@@ -2,20 +2,20 @@
 
 int main()
 {
-	/// 1. ´´½¨Ò»¸öÊäÈë²ã£¬Á½¸öÒşº¬²ã£¬Ò»¸öÊä³ö²ãµÄÉñ¾­ÍøÂç
-	mtl::BPNeuralNet<20, 30, 20, 2> mynn;
+    /// 1. åˆ›å»ºä¸€ä¸ªè¾“å…¥å±‚ï¼Œä¸¤ä¸ªéšå«å±‚ï¼Œä¸€ä¸ªè¾“å‡ºå±‚çš„ç¥ç»ç½‘ç»œ
+    mtl::BPNeuralNet<20, 30, 20, 2> mynn;
 	
-	/// 2. ³õÊ¼»¯
-	mynn.init(0.1, 0.8);
+    /// 2. åˆå§‹åŒ–
+    mynn.init(0.1, 0.8);
 
     mtl::Matrix<double, 1, 20> inMatrix;
     mtl::Matrix<double, 1, 2> outMatrix;
 	
-	/// 3. ... Â¼ÈëÄãµÄ¾ØÕóÊı¾İ
+    /// 3. ... å½•å…¥ä½ çš„çŸ©é˜µæ•°æ®
 	
-	/// 4. ÑµÁ·
+    /// 4. è®­ç»ƒ
     mynn.train(inMatrix, outMatrix, 100);
 	
-	/// 5. ·ÂÕæ
-	mynn.simulat(inMatrix, outMatrix);
+    /// 5. ä»¿çœŸ
+    mynn.simulat(inMatrix, outMatrix);
 }
