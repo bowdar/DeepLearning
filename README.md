@@ -8,7 +8,7 @@
 mtl::BPNeuralNet<20, 30, 20, 2> mynn;
 
 /// 2. 初始化
-mynn.init(0.001, 0.008);
+mynn.init(0.001, 0.8);
 
 mtl::Matrix<double, 1, 20> inMatrix;
 mtl::Matrix<double, 1, 2> outMatrix;
