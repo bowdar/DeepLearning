@@ -1,6 +1,6 @@
 # BPNeuralNetwork
 
-构造编译期矩阵以及数据传递代码，headonly，代码初步实现，功能还未完善
+构造编译期矩阵以及数据传递代码，headonl
 
 使用方法，过程及其简单
 ```cpp
