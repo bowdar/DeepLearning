@@ -62,10 +62,11 @@ struct NNType<std::index_sequence<I...>, Layers...>
 template<int... Layers>
 class BPNeuralNet
 {
+    static const int N = sizeof...(Layers);
     using InMatrix = Matrix<double, 1, UnpackInts<0, Layers...>::value>;
-    using OutMatrix = Matrix<double, 1, UnpackInts<sizeof...(Layers) - 1, Layers...>::value>;
+    using OutMatrix = Matrix<double, 1, UnpackInts<N - 1, Layers...>::value>;
 public:
-    void init(double aberration, double learnrate);
+    void init();
 
     template<class LX, class LY, class W, class T>
     void forward(LX& layerX, LY& layerY, W& weight, T& threshold);
@@ -73,28 +74,29 @@ public:
     void reverse(LX& layerX, LY& layerY, W& weight, T& threshold, DX& deltaX, DY& deltaY);
 
     template<std::size_t... I>
-    bool train(const InMatrix& input, OutMatrix& output, int times, std::index_sequence<I...>);
-    bool train(const InMatrix& input, OutMatrix& output, int times = 1)
+    bool train(const InMatrix& input, const OutMatrix& output, int times, std::index_sequence<I...>);
+    bool train(const InMatrix& input, const OutMatrix& output, int times = 1)
     {
-        return train(input, output, times, std::make_index_sequence<sizeof...(Layers) - 1>());
+        return train(input, output, times, std::make_index_sequence<N - 1>());
     }
 
     template<std::size_t... I>
     void simulat(const InMatrix& input, OutMatrix& output, std::index_sequence<I...>);
     void simulat(const InMatrix& input, OutMatrix& output)
     {
-        simulat(input, output, std::make_index_sequence<sizeof...(Layers) - 1>());
+        simulat(input, output, std::make_index_sequence<N - 1>());
     }
 
 public:
     std::tuple<Matrix<double, 1, Layers>...> m_layers;
-    typename NNType<std::make_index_sequence<sizeof...(Layers) - 1>, Layers...>::Weights m_weights;
-    typename NNType<std::make_index_sequence<sizeof...(Layers) - 1>, Layers...>::Thresholds m_thresholds;
+    typename NNType<std::make_index_sequence<N - 1>, Layers...>::Weights m_weights;
+    typename NNType<std::make_index_sequence<N - 1>, Layers...>::Thresholds m_thresholds;
     std::tuple<Matrix<double, 1, Layers>...> m_deltas;
     OutMatrix m_aberrmx;
 
-protected:
-    double m_aberration, m_learnrate;
+public:
+    double m_aberration = 0.001;
+    double m_learnrate = 0.1;
 };
 
 }

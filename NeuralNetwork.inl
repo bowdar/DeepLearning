@@ -7,11 +7,8 @@
 namespace mtl {
 
 template<int... Layers>
-void BPNeuralNet<Layers...>::init(double aberration, double learnrate)
+void BPNeuralNet<Layers...>::init()
 {
-    m_aberration = aberration;
-    m_learnrate = learnrate;
-    
     for_each(m_weights, [](auto& weight) mutable
     {
         weight.random(0, 1);
@@ -21,20 +18,6 @@ void BPNeuralNet<Layers...>::init(double aberration, double learnrate)
     {
         threshold.random(0, 1);
     });
-}
-
-template<class T>
-void _testPrint(T& matrix, const char* name)
-{
-    printf("%s = \n", name);
-    for(const auto& r : matrix.data)
-    {
-        for(const auto& e : r)
-        {
-            printf("%f\t", (float)e);
-        }
-        printf("\n");
-    }
 }
 
 template<int... Layers>
@@ -60,14 +43,14 @@ void BPNeuralNet<Layers...>::reverse(LX& layerX, LY& layerY, W& weight, T& thres
 
 template<int... Layers>
 template<std::size_t... I>
-bool BPNeuralNet<Layers...>::train(const InMatrix& input, OutMatrix& output, int times, std::index_sequence<I...>)
+bool BPNeuralNet<Layers...>::train(const InMatrix& input, const OutMatrix& output, int times, std::index_sequence<I...>)
 {
     /// 1. 输入归一化
     auto& layer0 = std::get<0>(m_layers);
     layer0 = input;
     layer0.normaliz1();
-    auto& layerN = std::get<sizeof...(Layers) - 1>(m_layers);
-    auto& deltaN = std::get<sizeof...(Layers) - 1>(m_deltas);
+    auto& layerN = std::get<N - 1>(m_layers);
+    auto& deltaN = std::get<N - 1>(m_deltas);
     for(int i = 0; i < times; ++i)
     {
         /// 2. 正向传播
@@ -81,16 +64,14 @@ bool BPNeuralNet<Layers...>::train(const InMatrix& input, OutMatrix& output, int
         double aberration = m_aberrmx.subtract(output, layerN).squariance() / 2;
         if (aberration < m_aberration) return true;
         /// 4. 反向修正
-        deltaN.multiply(m_aberrmx, layerN.foreach(dlogsig));
-        #define J sizeof...(Layers) - I - 2
-        expander {(reverse(std::get<J>(m_layers),
-                           std::get<J + 1>(m_layers),
-                           std::get<J>(m_weights),
-                           std::get<J>(m_thresholds),
-                           std::get<J>(m_deltas),
-                           std::get<J + 1>(m_deltas)),
+       deltaN.hadamard(m_aberrmx, layerN.foreach(dlogsig));
+        expander {(reverse(std::get<N - I - 2>(m_layers),
+                           std::get<N - I - 1>(m_layers),
+                           std::get<N - I - 2>(m_weights),
+                           std::get<N - I - 2>(m_thresholds),
+                           std::get<N - I - 2>(m_deltas),
+                           std::get<N - I - 1>(m_deltas)),
                            0)...};
-        #undef J
     }
     return false;
 }
@@ -111,7 +92,7 @@ void BPNeuralNet<Layers...>::simulat(const InMatrix& input, OutMatrix& output, s
                        std::get<I>(m_thresholds)),
                        0)...};
     /// 3. 输出结果
-    output = std::get<sizeof...(Layers) - 1>(m_layers);
+    output = std::get<N - 1>(m_layers);
 }
 
 }

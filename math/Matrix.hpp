@@ -125,7 +125,7 @@ public:
         }
         return ret;
     }
-    Matrix& operator+=(const Matrix &m)
+    Matrix& operator+=(const Matrix& m)
     {
         for (int i = 0; i < ROW; ++i)
         {
@@ -148,7 +148,7 @@ public:
         }
         return *this;
     }
-    Matrix operator-(const Matrix &m) const
+    Matrix operator-(const Matrix& m) const
     {
         Matrix ret;
         for (int i = 0; i < ROW; ++i)
@@ -160,7 +160,7 @@ public:
         }
         return ret;
     }
-    Matrix& operator-=(const Matrix &m)
+    Matrix& operator-=(const Matrix& m)
     {
         for (int i = 0; i < ROW; ++i)
         {
@@ -187,7 +187,7 @@ public:
     }
 
     /// Hadamard product 哈达玛积
-    Matrix& hadamard(const Matrix &m)
+    Matrix& hadamard(const Matrix& m)
     {
         for (int i = 0; i < ROW; ++i)
         {
@@ -198,10 +198,21 @@ public:
         }
         return *this;
     }
+    Matrix& hadamard(const Matrix& mX, const Matrix& mY)
+    {
+        for (int i = 0; i < ROW; ++i)
+        {
+            for (int j = 0; j < COL; ++j)
+            {
+                data[i][j] = mX.data[i][j] * mY.data[i][j];
+            }
+        }
+        return *this;
+    }
 
     /// Kronecker product 克罗内克积（张量积）
     template<int r, int c>
-    Matrix<DataType, ROW * r, COL * c> kronecker(const Matrix<DataType, r, c> &m) const
+    Matrix<DataType, ROW * r, COL * c> kronecker(const Matrix<DataType, r, c>& m) const
     {
         Matrix<DataType, ROW * r, COL * c> ret;
         for (int i = 0; i < ROW; ++i)
