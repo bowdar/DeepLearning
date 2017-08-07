@@ -64,7 +64,7 @@ bool BPNeuralNet<Layers...>::train(const InMatrix& input, const OutMatrix& outpu
         double aberration = m_aberrmx.subtract(output, layerN).squariance() / 2;
         if (aberration < m_aberration) return true;
         /// 4. 反向修正
-       deltaN.hadamard(m_aberrmx, layerN.foreach(dlogsig));
+        deltaN.hadamard(m_aberrmx, layerN.foreach(dlogsig));
         expander {(reverse(std::get<N - I - 2>(m_layers),
                            std::get<N - I - 1>(m_layers),
                            std::get<N - I - 2>(m_weights),
@@ -78,7 +78,7 @@ bool BPNeuralNet<Layers...>::train(const InMatrix& input, const OutMatrix& outpu
 
 template<int... Layers>
 template<std::size_t... I>
-void BPNeuralNet<Layers...>::simulat(const InMatrix& input, OutMatrix& output, std::index_sequence<I...>)
+void BPNeuralNet<Layers...>::simulate(const InMatrix& input, OutMatrix& output, std::index_sequence<I...>)
 {
     /// 1. 输入归一化
     auto& layer0 = std::get<0>(m_layers);

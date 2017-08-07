@@ -81,10 +81,10 @@ public:
     }
 
     template<std::size_t... I>
-    void simulat(const InMatrix& input, OutMatrix& output, std::index_sequence<I...>);
-    void simulat(const InMatrix& input, OutMatrix& output)
+    void simulate(const InMatrix& input, OutMatrix& output, std::index_sequence<I...>);
+    void simulate(const InMatrix& input, OutMatrix& output)
     {
-        simulat(input, output, std::make_index_sequence<N - 1>());
+        simulate(input, output, std::make_index_sequence<N - 1>());
     }
 
 public:
@@ -101,4 +101,4 @@ public:
 
 }
 
-#include "NeuralNetwork.inl"
+#include "BPNeuralNetwork.inl"
