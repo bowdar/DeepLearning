@@ -8,6 +8,7 @@
 
 #include "math/sigfunc.h"
 #include "math/Matrix.hpp"
+#include "util/TupleTool.hpp"
 #include <tuple>
 #include <utility>
 

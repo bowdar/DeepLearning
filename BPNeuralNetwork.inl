@@ -9,12 +9,12 @@ namespace mtl {
 template<int... Layers>
 void BPNeuralNet<Layers...>::init()
 {
-    for_each(m_weights, [](auto& weight) mutable
+    mtl::for_each(m_weights, [](auto& weight) mutable
     {
         weight.random(0, 1);
     });
 
-    for_each(m_thresholds, [](auto& threshold) mutable
+    mtl::for_each(m_thresholds, [](auto& threshold) mutable
     {
         threshold.random(0, 1);
     });
@@ -54,7 +54,6 @@ bool BPNeuralNet<Layers...>::train(const InMatrix& input, const OutMatrix& outpu
     for(int i = 0; i < times; ++i)
     {
         /// 2. 正向传播
-        using expander = int[];
         expander {(forward(std::get<I>(m_layers),
                            std::get<I + 1>(m_layers),
                            std::get<I>(m_weights),
@@ -85,7 +84,6 @@ void BPNeuralNet<Layers...>::simulate(const InMatrix& input, OutMatrix& output, 
     layer0 = input;
     layer0.normaliz1();
     /// 2. 正向传播
-    using expander = int[];
     expander {(forward(std::get<I>(m_layers),
                        std::get<I + 1>(m_layers),
                        std::get<I>(m_weights),
