@@ -64,6 +64,7 @@ template<int... Layers>
 class BPNeuralNet
 {
     static const int N = sizeof...(Layers);
+    using expander = int[];
     using InMatrix = Matrix<double, 1, UnpackInts<0, Layers...>::value>;
     using OutMatrix = Matrix<double, 1, UnpackInts<N - 1, Layers...>::value>;
 public:
@@ -75,17 +76,17 @@ public:
     void reverse(LX& layerX, LY& layerY, W& weight, T& threshold, DX& deltaX, DY& deltaY);
 
     template<std::size_t... I>
-    bool train(const InMatrix& input, const OutMatrix& output, int times, std::index_sequence<I...>);
-    bool train(const InMatrix& input, const OutMatrix& output, int times = 1)
+    bool train(const InMatrix& input, const OutMatrix& output, int times, double nor, std::index_sequence<I...>);
+    bool train(const InMatrix& input, const OutMatrix& output, int times = 1, double nor = 1)
     {
-        return train(input, output, times, std::make_index_sequence<N - 1>());
+        return train(input, output, times, nor, std::make_index_sequence<N - 1>());
     }
 
     template<std::size_t... I>
-    void simulate(const InMatrix& input, OutMatrix& output, std::index_sequence<I...>);
-    void simulate(const InMatrix& input, OutMatrix& output)
+    void simulate(const InMatrix& input, OutMatrix& output, double nor, std::index_sequence<I...>);
+    void simulate(const InMatrix& input, OutMatrix& output, double nor = 1)
     {
-        simulate(input, output, std::make_index_sequence<N - 1>());
+        simulate(input, output, nor, std::make_index_sequence<N - 1>());
     }
 
 public:

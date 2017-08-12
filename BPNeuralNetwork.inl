@@ -43,12 +43,12 @@ void BPNeuralNet<Layers...>::reverse(LX& layerX, LY& layerY, W& weight, T& thres
 
 template<int... Layers>
 template<std::size_t... I>
-bool BPNeuralNet<Layers...>::train(const InMatrix& input, const OutMatrix& output, int times, std::index_sequence<I...>)
+bool BPNeuralNet<Layers...>::train(const InMatrix& input, const OutMatrix& output, int times, double nor, std::index_sequence<I...>)
 {
     /// 1. 输入归一化
     auto& layer0 = std::get<0>(m_layers);
     layer0 = input;
-    layer0.normaliz1();
+    layer0.normalize(nor);
     auto& layerN = std::get<N - 1>(m_layers);
     auto& deltaN = std::get<N - 1>(m_deltas);
     for(int i = 0; i < times; ++i)
@@ -77,12 +77,12 @@ bool BPNeuralNet<Layers...>::train(const InMatrix& input, const OutMatrix& outpu
 
 template<int... Layers>
 template<std::size_t... I>
-void BPNeuralNet<Layers...>::simulate(const InMatrix& input, OutMatrix& output, std::index_sequence<I...>)
+void BPNeuralNet<Layers...>::simulate(const InMatrix& input, OutMatrix& output, double nor, std::index_sequence<I...>)
 {
     /// 1. 输入归一化
     auto& layer0 = std::get<0>(m_layers);
     layer0 = input;
-    layer0.normaliz1();
+    layer0.normalize(nor);
     /// 2. 正向传播
     expander {(forward(std::get<I>(m_layers),
                        std::get<I + 1>(m_layers),
