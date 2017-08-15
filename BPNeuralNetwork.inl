@@ -37,7 +37,7 @@ void BPNeuralNet<Layers...>::reverse(LX& layerX, LY& layerY, W& weight, T& thres
     threshold.adjustT(deltaY, m_learnrate);
     /// 计算delta
     deltaX.multtrans(weight, deltaY);
-    layerY.foreach(dlogsig);
+    layerX.foreach(dlogsig);
     deltaX.hadamard(layerX);
 };
 
@@ -61,7 +61,7 @@ bool BPNeuralNet<Layers...>::train(const InMatrix& input, const OutMatrix& outpu
                            0)...};
         /// 3. 判断误差
         double aberration = m_aberrmx.subtract(output, layerN).squariance() / 2;
-        if (aberration < m_aberration) return true;
+        if (aberration < m_aberration) break;
         /// 4. 反向修正
         deltaN.hadamard(m_aberrmx, layerN.foreach(dlogsig));
         expander {(reverse(std::get<N - I - 2>(m_layers),

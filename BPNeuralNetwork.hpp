@@ -65,8 +65,10 @@ class BPNeuralNet
 {
     static const int N = sizeof...(Layers);
     using expander = int[];
+public:
     using InMatrix = Matrix<double, 1, UnpackInts<0, Layers...>::value>;
     using OutMatrix = Matrix<double, 1, UnpackInts<N - 1, Layers...>::value>;
+
 public:
     void init();
 

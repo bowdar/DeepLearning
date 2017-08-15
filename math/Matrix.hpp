@@ -244,13 +244,13 @@ public:
     void random(DataType min, DataType max)
     {
         DataType len = (max - min) / (DataType)RAND_MAX;
-        for (int i = 0; i < ROW; ++i)
-        {
-            for (int j = 0; j < COL; ++j)
-            {
-                data[i][j] = min + (DataType)rand() * len;
-            }
-        }
+        foreach([len, min](auto& e){ return min + (DataType)rand() * len; });
+    }
+
+    /// 构建常值矩阵
+    void constant(DataType val)
+    {
+        foreach([val](auto& e){ return val; });
     }
 
     /// 调整权值，算法包括隐含转置的单维张量积
@@ -260,7 +260,7 @@ public:
         {
             for (int j = 0; j < COL; ++j)
             {
-                data[i][j] += learnrate * mX.data[1][i] * mY.data[1][j];
+                data[i][j] += learnrate * mX.data[0][i] * mY.data[0][j];
             }
         }
         return *this;
