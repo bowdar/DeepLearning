@@ -2,7 +2,7 @@
 
 Compile-time matrix constructions, headonly 构造编译期矩阵以及数据传递代码
 
-Usage, the process is very simple 使用方法，过程及其简单
+Usage, the process is very simple 使用方法，过程极其简单
 ```cpp
 /// 1. Create a neural network with an input layer two hide layers and an output layer 创建一个输入层，两个隐含层，一个输出层的神经网络 
 mtl::BPNN<20, 30, 20, 2> bpnn;
