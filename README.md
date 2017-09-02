@@ -18,6 +18,6 @@ mtl::Matrix<double, 1, 2> outMatrix;
 /// 4. training 训练 
 bpnn.train(inMatrix, outMatrix, 100);
 
-/// 5. simulation 仿真
-bpnn.simulat(inMatrix, outMatrix);
-```
+/// 5. simuation 仿真
+bpnn.simulate(inMatrix, outMatrix);
+``
