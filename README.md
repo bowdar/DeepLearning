@@ -1,4 +1,4 @@
-# BPNeuralNetwork
+# Deep learning neural network
 
 Compile-time matrix constructions, headonly 构造编译期矩阵以及数据传递代码
 
