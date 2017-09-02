@@ -1,4 +1,4 @@
-# Meta-programming neural network 元编程神经网络
+# Meta-programming neural network 元编程神经网络，纯头文件，无依赖
 
 Compile-time matrix constructions, headonly 构造编译期矩阵以及数据传递代码
 
