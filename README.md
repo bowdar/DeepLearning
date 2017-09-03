@@ -1,6 +1,7 @@
 # Meta-programming neural network 元编程神经网络
 
-Compile-time matrix constructions, headonly 构造编译期矩阵以及数据传递代码，纯头文件，无依赖
+Compile-time matrix constructions 构造编译期矩阵以及数据传递代码
+headonly, no dependency, limitless layers, limitless nodes 纯头文件，无依赖，任意深度，允许超大结点数
 
 Usage, the process is very simple 使用方法，过程极其简单
 ```cpp
