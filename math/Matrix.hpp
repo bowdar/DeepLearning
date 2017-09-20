@@ -86,15 +86,47 @@ public:
         }
         return *this;
     }
+    /// 矩阵乘法带累加
+    template<int RC>
+    Matrix& mult_sum(const Matrix<DataType, ROW, RC>& mX, const Matrix<DataType, RC, COL>& mY)
+    {
+        for (int i = 0; i < ROW; ++i)
+        {
+            for (int j = 0; j < COL; ++j)
+            {
+                for (int k = 0; k < RC; ++k)
+                {
+                    data[i][j] += mX.data[i][k] * mY.data[k][j];
+                }
+            }
+        }
+        return *this;
+    }
     /// 矩阵乘法带转置
     template<int RC>
-    Matrix& multtrans(const Matrix<DataType, COL, RC>& mX, const Matrix<DataType, ROW, RC>& mY)
+    Matrix& mult_trans(const Matrix<DataType, COL, RC> &mX, const Matrix<DataType, ROW, RC> &mY)
     {
         for (int i = 0; i < ROW; ++i)
         {
             for (int j = 0; j < COL; ++j)
             {
                 data[i][j] = 0;
+                for (int k = 0; k < RC; ++k)
+                {
+                    data[i][j] += mX.data[j][k] * mY.data[i][k];
+                }
+            }
+        }
+        return *this;
+    }
+    /// 矩阵乘法带转置带累加
+    template<int RC>
+    Matrix& mult_trans_sum(const Matrix<DataType, COL, RC>& mX, const Matrix<DataType, ROW, RC>& mY)
+    {
+        for (int i = 0; i < ROW; ++i)
+        {
+            for (int j = 0; j < COL; ++j)
+            {
                 for (int k = 0; k < RC; ++k)
                 {
                     data[i][j] += mX.data[j][k] * mY.data[i][k];
@@ -218,6 +250,17 @@ public:
         }
         return *this;
     }
+    Matrix& hadamard_sum(const Matrix& mX, const Matrix& mY)
+    {
+        for (int i = 0; i < ROW; ++i)
+        {
+            for (int j = 0; j < COL; ++j)
+            {
+                data[i][j] += mX.data[i][j] * mY.data[i][j];
+            }
+        }
+        return *this;
+    }
 
     /// Kronecker product 克罗内克积（张量积）
     template<int r, int c>
@@ -277,6 +320,16 @@ public:
         }
         return *this;
     }
+
+    Matrix<DataType, 1, COL> row(int r)
+    {
+        Matrix<DataType, 1, COL> m;
+        for(int i = 0; i < COL; ++i)
+        {
+            m.data[1][i] = data[r][i];
+        }
+        return m;
+    };
 
 public:
     int Row() { return ROW; }

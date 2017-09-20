@@ -35,7 +35,7 @@ void BPNN<Layers...>::reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, D
     weight.adjustW(layerX, deltaY, m_learnrate);
     threshold.adjustT(deltaY, m_learnrate);
     /// 计算delta
-    deltaX.multtrans(weight, deltaY);
+    deltaX.mult_trans(weight, deltaY);
     layerX.foreach(dlogsig);
     deltaX.hadamard(layerX);
 };

@@ -69,8 +69,8 @@ public:
                  RWX& rWeightX, RWY& rWeightY, RDX& rDeltaX);
 
     template<std::size_t... I>
-    bool train(const InMatrix& input, const OutMatrix& output, int times, double nor, std::index_sequence<I...>);
-    bool train(const InMatrix& input, const OutMatrix& output, int times = 1, double nor = 1)
+    bool train(InMatrix& input, const OutMatrix& output, int times, double nor, std::index_sequence<I...>);
+    bool train(InMatrix& input, const OutMatrix& output, int times = 1, double nor = 1)
     {
         return train(input, output, times, nor, std::make_index_sequence<N - 1>());
     }

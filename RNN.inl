@@ -31,7 +31,7 @@ template<class LX, class LY, class W, class T, class RLY, class RW>
 void RNN<Layers...>::forward(LX& layerX, LY& layerY, W& weight, T& threshold, RLY& rLayerY, RW& rWeight)
 {
     layerY.multiply(layerX, weight); /// layerY = layerX * weight
-    layerY.multiply(rLayerY, rWeight);
+    layerY.mult_sum(rLayerY, rWeight);
     layerY.foreach([&layerX](auto& e){ return e / layerX.Col();});
     layerY += threshold;
     layerY.foreach(logsig);
@@ -47,8 +47,8 @@ void RNN<Layers...>::reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, DY
     rWeightY.adjustW(rLayerY, deltaY, m_learnrate);
     threshold.adjustT(deltaY, m_learnrate);
     /// 计算delta
-    deltaX.multtrans(weight, deltaY);
-    deltaX.multtrans(rWeightX, rDeltaX);
+    deltaX.mult_trans(weight, deltaY);
+    deltaX.mult_trans_sum(rWeightX, rDeltaX);
     layerX.foreach(dlogsig);
     deltaX.hadamard(layerX);
     rDeltaX = deltaX;
@@ -56,28 +56,32 @@ void RNN<Layers...>::reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, DY
 
 template<int... Layers>
 template<std::size_t... I>
-bool RNN<Layers...>::train(const InMatrix& input, const OutMatrix& output, int times, double nor, std::index_sequence<I...>)
+bool RNN<Layers...>::train(InMatrix& input, const OutMatrix& output, int times, double nor, std::index_sequence<I...>)
 {
-    /// 1. 输入归一化
-    auto& layer0 = std::get<0>(m_layers);
-    layer0 = input;
-    layer0.normalize(nor);
     auto& layerN = std::get<N - 1>(m_layers);
     auto& deltaN = std::get<N - 1>(m_deltas);
     for(int i = 0; i < times; ++i)
     {
-        /// 2. 正向传播
-        expander {(forward(std::get<I>(m_layers),
-                           std::get<I + 1>(m_layers),
-                           std::get<I>(m_weights),
-                           std::get<I>(m_thresholds),
-                           std::get<I + 1>(m_rLayers),
-                           std::get<I + 1>(m_rWeights)),
-                           0)...};
-        /// 3. 判断误差
+        auto& layer0 = std::get<0>(m_layers);
+        for(int j = 0; j < input.Row(); ++j)
+        {
+            /// 1. 依次取input的每一层作为当前输入层
+            layer0 = input.row(j);
+            /// 2. 输入归一化
+            layer0.normalize(nor);
+            /// 3. 正向传播
+            expander {(forward(std::get<I>(m_layers),
+                               std::get<I + 1>(m_layers),
+                               std::get<I>(m_weights),
+                               std::get<I>(m_thresholds),
+                               std::get<I + 1>(m_rLayers),
+                               std::get<I + 1>(m_rWeights)),
+                               0)...};
+        }
+        /// 4. 判断误差
         double aberration = m_aberrmx.subtract(output, layerN).squariance() / 2;
         if (aberration < m_aberration) break;
-        /// 4. 反向修正
+        /// 5. 反向修正
         deltaN.hadamard(m_aberrmx, layerN.foreach(dlogsig));
         expander {(reverse(std::get<N - I - 2>(m_layers),
                            std::get<N - I - 2>(m_weights),
