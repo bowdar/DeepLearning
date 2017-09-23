@@ -18,12 +18,38 @@ void BPNN<Layers...>::init()
     });
 }
 
+template<class T>
+void _testPrint(T& matrix, const char* name)
+{
+    printf("%s = \n", name);
+    for(const auto& r : matrix.data)
+    {
+        for(const auto& e : r)
+        {
+            printf("%f\t", (float)e);
+        }
+        printf("\n---------------------------------------------------\n");
+    }
+}
+
+template<class T>
+void _testPrint1(T& matrix, const char* name)
+{
+    for(const auto& r : matrix.data)
+    {
+        for(const auto& e : r)
+        {
+            printf("%.2f\t", (float)e);
+        }
+    }
+}
+
 template<int... Layers>
 template<class LX, class LY, class W, class T>
 void BPNN<Layers...>::forward(LX& layerX, LY& layerY, W& weight, T& threshold)
 {
     layerY.multiply(layerX, weight); /// layerY = layerX * weight
-    layerY.foreach([&layerX](auto& e){ return e / layerX.Col();});
+    layerY.foreach([&layerX](auto& e){ return e / layerX.Col();}); /// 用于支持超大节点数
     layerY += threshold;
     layerY.foreach(logsig);
 };

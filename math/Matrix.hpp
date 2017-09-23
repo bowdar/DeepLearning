@@ -18,7 +18,7 @@ template<typename DataType, int ROW, int COL>
 class Matrix
 {
 public:
-    /// 提供两个遍历函数，第一个会遍历并修改每个元素
+    /// 提供三个遍历函数，第一个会遍历并修改每个元素，第三个会产生一个新的矩阵
     template<typename F>
     Matrix& foreach(F func)
     {
@@ -42,6 +42,19 @@ public:
             }
         }
         return *this;
+    }
+    template<typename F>
+    Matrix foreach_n(F func)
+    {
+        Matrix ret;
+        for (int i = 0; i < ROW; ++i)
+        {
+            for (int j = 0; j < COL; ++j)
+            {
+                ret.data[i][j] = func(data[i][j]);
+            }
+        }
+        return ret;
     }
 
     /// 平方和
@@ -332,8 +345,8 @@ public:
     };
 
 public:
-    int Row() { return ROW; }
-    int Col() { return COL; }
+    constexpr int Row() { return ROW; }
+    constexpr int Col() { return COL; }
 
 public:
     DataType data[ROW][COL];
