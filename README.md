@@ -6,19 +6,20 @@ headonly, no dependency, limitless layers, limitless nodes 纯头文件，无依
 Usage, the process is very simple 使用方法，过程极其简单
 1) BPNN
 ```cpp
-#include "RNN.hpp"
+#include "BPNN.hpp"
 
 int main()
 {
     /// 1. Create a neural network with an input layer two hide layers and an output layer 创建一个输入层，两个隐含层，一个输出层的神经网络 
-    mtl::BPNN<20, 30, 20, 2> bpnn;
+    typedef mtl::BPNN<20, 30, 20, 2> MyNN;
+    MyNN bpnn;
 
     /// 2. initialization 初始化
     bpnn.init(0.001, 0.8);
 
     /// 3. enter your matrix data... 录入你的矩阵数据
-    mtl::Matrix<double, 1, 20> inMatrix;
-    mtl::Matrix<double, 1, 2> outMatrix;
+    MyNN::InMatrix inMatrix;
+    MyNN::OutMatrix outMatrix;
     ///    ... 
 
     /// 4. training 训练 
@@ -41,7 +42,7 @@ int main()
     /// 2. 初始化
     rnn.init(0.1, 0.8);
 
-    /// 3. 输入，循环网络支持多输入多输出，InMatrix<10>表示10组输入
+    /// 3. 输入，循环网络支持多输入多输出，InMatrix<10>表示一个循环10组输入
     MyRnn::InMatrix<10> inMatrix;
     MyRnn::OutMatrix<1> outMatrix;
     ///    录入你的矩阵数据...
