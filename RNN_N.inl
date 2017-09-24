@@ -1,68 +1,56 @@
 //-------------------------------------------------------------------------------
 // @author
-//     Millhaus.Chen @time 2017/08/01 09:29
+//     Millhaus.Chen @time 2017/09/02 16:34
 //-------------------------------------------------------------------------------
 namespace mtl {
 
 template<int... Layers>
-void BPNN<Layers...>::init()
+void RNN_N<Layers...>::init()
 {
     mtl::for_each(m_weights, [](auto& weight) mutable
     {   weight.random(0, 1);
     });
-
     mtl::for_each(m_thresholds, [](auto& threshold) mutable
     {   threshold.random(0, 1);
     });
-}
-
-template<class T>
-void _testPrint(T& matrix, const char* name)
-{
-    printf("%s = \n", name);
-    for(const auto& r : matrix.data)
-    {   for(const auto& e : r)
-        {   printf("%f\t", (float)e);
-        }
-        printf("\n---------------------------------------------------\n");
-    }
-}
-
-template<class T>
-void _testPrint1(T& matrix, const char* name)
-{
-    for(const auto& r : matrix.data)
-    {   for(const auto& e : r)
-        {   printf("%.2f\t", (float)e);
-        }
-    }
+    mtl::for_each(m_rWeights, [](auto& rWeight) mutable
+    {   rWeight.random(0, 1);
+    });
+    std::get<0>(m_rLayers).constant(0);
+    std::get<N - 2>(m_rDeltas).constant(0);
 }
 
 template<int... Layers>
-template<class LX, class LY, class W, class T>
-void BPNN<Layers...>::forward(LX& layerX, LY& layerY, W& weight, T& threshold)
+template<class LX, class LY, class W, class T, class RLY, class RW>
+void RNN_N<Layers...>::forward(LX& layerX, LY& layerY, W& weight, T& threshold, RLY& rLayerY, RW& rWeight)
 {
     layerY.multiply(layerX, weight); /// layerY = layerX * weight
-    layerY.foreach([&layerX](auto& e){ return e / layerX.Col();}); /// 用于支持超大节点数
+    layerY.mult_sum(rLayerY, rWeight);
+    layerY.foreach([&layerX](auto& e){ return e / layerX.Col();});
     layerY += threshold;
     layerY.foreach(logsig);
+    rLayerY = layerY;
 };
 
 template<int... Layers>
-template<class LX, class W, class T, class DX, class DY>
-void BPNN<Layers...>::reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, DY& deltaY)
+template<class LX, class W, class T, class DX, class DY, class RLY, class RWX, class RWY, class RDX>
+void RNN_N<Layers...>::reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, DY& deltaY, RLY& rLayerY,
+                             RWX& rWeightX, RWY& rWeightY, RDX& rDeltaX)
 {
     weight.adjustW(layerX, deltaY, m_learnrate);
+    rWeightY.adjustW(rLayerY, deltaY, m_learnrate);
     threshold.adjustT(deltaY, m_learnrate);
     /// 计算delta
     deltaX.mult_trans(weight, deltaY);
+    deltaX.mult_trans_sum(rWeightX, rDeltaX);
     layerX.foreach(dlogsig);
     deltaX.hadamard(layerX);
+    rDeltaX = deltaX;
 };
 
 template<int... Layers>
 template<std::size_t... I>
-bool BPNN<Layers...>::train(const InMatrix& input, const OutMatrix& output, int times, double nor, std::index_sequence<I...>)
+bool RNN_N<Layers...>::train(const InMatrix& input, const OutMatrix& output, int times, double nor, std::index_sequence<I...>)
 {
     /// 1. 输入归一化
     auto& layer0 = std::get<0>(m_layers);
@@ -75,12 +63,10 @@ bool BPNN<Layers...>::train(const InMatrix& input, const OutMatrix& output, int 
         expander {(forward(std::get<I>(m_layers),
                            std::get<I + 1>(m_layers),
                            std::get<I>(m_weights),
-                           std::get<I>(m_thresholds)),
-                           0)...};
-        if(i == times - 1)
-        {   _testPrint(output, "output");
-            _testPrint(layerN, "train output");
-        }
+                           std::get<I>(m_thresholds),
+                           std::get<I + 1>(m_rLayers),
+                           std::get<I + 1>(m_rWeights)),
+                0)...};
         /// 3. 判断误差
         double aberration = m_aberrmx.subtract(output, layerN).squariance() / 2;
         if (aberration < m_aberration) break;
@@ -90,15 +76,19 @@ bool BPNN<Layers...>::train(const InMatrix& input, const OutMatrix& output, int 
                            std::get<N - I - 2>(m_weights),
                            std::get<N - I - 2>(m_thresholds),
                            std::get<N - I - 2>(m_deltas),
-                           std::get<N - I - 1>(m_deltas)),
-                           0)...};
+                           std::get<N - I - 1>(m_deltas),
+                           std::get<N - I - 1>(m_rLayers),
+                           std::get<N - I - 2>(m_rWeights),
+                           std::get<N - I - 1>(m_rWeights),
+                           std::get<N - I - 2>(m_rDeltas)),
+                0)...};
     }
     return false;
 }
 
 template<int... Layers>
 template<std::size_t... I>
-double BPNN<Layers...>::simulate(const InMatrix& input, OutMatrix& output, OutMatrix& expect, double nor, std::index_sequence<I...>)
+double RNN_N<Layers...>::simulate(const InMatrix& input, OutMatrix& output, OutMatrix& expect, double nor, std::index_sequence<I...>)
 {
     /// 1. 输入归一化
     auto& layer0 = std::get<0>(m_layers);
@@ -109,15 +99,12 @@ double BPNN<Layers...>::simulate(const InMatrix& input, OutMatrix& output, OutMa
                        std::get<I + 1>(m_layers),
                        std::get<I>(m_weights),
                        std::get<I>(m_thresholds)),
-                       0)...};
+            0)...};
     /// 3. 输出结果
     output = std::get<N - 1>(m_layers);
 
     /// 4. 判断误差
     double aberration = m_aberrmx.subtract(expect, output).squariance() / 2;
-
-    _testPrint(expect, "expect");
-    _testPrint(output, "simulate output");
 
     return aberration;
 }

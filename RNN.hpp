@@ -75,34 +75,32 @@ public:
     using InMatrix = Matrix<double,
                             R,
                             UnpackInts<0, Layers...>::value>;
-
+    template<int R>
     using OutMatrix = Matrix<double,
-                             1,
+                             R,
                              UnpackInts<N - 1, Layers...>::value>;
 
 public:
     void init();
 
     template<class LX, class LY, class W, class T, class RW, class S>
-    void forward(LX& layerX, LY& layerY, W& weight, T& threshold, RW& rWeight, S& state, int t);
+    void forward(LX& layerX, LY& layerY, W& weight, T& threshold, RW& rWeight, S& state, int t, int rIn);
     template<class LX, class W, class T, class DX, class DY, class RW, class S, class DT>
     void reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, DY& deltaY, RW& rWeight,
-                 S& state, DT& delta, int t, int r);
+                 S& state, DT& delta, int t, int r, int rIn);
 
-    template<class InMx, std::size_t... I>
-    bool train(InMx& input, const OutMatrix& output, int times, double nor, std::index_sequence<I...>);
-    template<class InMx>
-    bool train(InMx& input, const OutMatrix& output, int times = 1, double nor = 1)
-    {
-        return train(input, output, times, nor, std::make_index_sequence<N - 1>());
+    template<class IN, class OUT, std::size_t... I>
+    bool train(IN& input, OUT& output, int times, double nor, std::index_sequence<I...>);
+    template<class IN, class OUT>
+    bool train(IN& input, OUT& output, int times = 1, double nor = 1)
+    {   return train(input, output, times, nor, std::make_index_sequence<N - 1>());
     }
 
-    template<class InMx, std::size_t... I>
-    double simulate(const InMx& input, OutMatrix& output, OutMatrix& expect, double nor, std::index_sequence<I...>);
-    template<class InMx>
-    double simulate(const InMx& input, OutMatrix& output, OutMatrix& expect, double nor = 1)
-    {
-        return simulate(input, output, expect, nor, std::make_index_sequence<N - 1>());
+    template<class IN, class OUT, std::size_t... I>
+    double simulate(IN& input, OUT& output, OUT& expect, double nor, std::index_sequence<I...>);
+    template<class IN, class OUT>
+    double simulate(IN& input, OUT& output, OUT& expect, double nor = 1)
+    {   return simulate(input, output, expect, nor, std::make_index_sequence<N - 1>());
     }
 
 public:
@@ -111,8 +109,6 @@ public:
     typename rnn::Type<std::make_index_sequence<N - 1>, Layers...>::Thresholds m_thresholds;
     typename rnn::Type<std::make_index_sequence<N>, Layers...>::RWeights m_rWeights;  /// redundance 1
     std::tuple<Matrix<double, 1, Layers>...> m_deltas; /// redundance 1
-    std::tuple<Matrix<double, 1, Layers>...> m_rDeltas; /// redundance 1
-    OutMatrix m_aberrmx;
 
 public:
     double m_aberration = 0.001;

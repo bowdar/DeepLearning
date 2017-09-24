@@ -19,8 +19,7 @@ namespace mtl {
 namespace lstm
 {
     enum Gate : unsigned char
-    {
-        f = 0,
+    {   f = 0,
         i,
         C,
         o,
@@ -83,15 +82,13 @@ public:
     template<std::size_t... I>
     bool train(const InMatrix& input, const OutMatrix& output, int times, double nor, std::index_sequence<I...>);
     bool train(const InMatrix& input, const OutMatrix& output, int times = 1, double nor = 1)
-    {
-        return train(input, output, times, nor, std::make_index_sequence<N - 1>());
+    {   return train(input, output, times, nor, std::make_index_sequence<N - 1>());
     }
 
     template<std::size_t... I>
     double simulate(const InMatrix& input, OutMatrix& output, OutMatrix& expect, double nor, std::index_sequence<I...>);
     double simulate(const InMatrix& input, OutMatrix& output, OutMatrix& expect, double nor = 1)
-    {
-        return simulate(input, output, expect, nor, std::make_index_sequence<N - 1>());
+    {   return simulate(input, output, expect, nor, std::make_index_sequence<N - 1>());
     }
 
 public:

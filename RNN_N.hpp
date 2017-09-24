@@ -1,9 +1,9 @@
 //-------------------------------------------------------------------------------
 // @brief
-//     Deep BP neural network
+//     Recursion deep neural network
 //
 // @author
-//     Millhaus.Chen @time 2017/07/28 15:16
+//     Millhaus.Chen @time 2017/09/02 16:34
 //-------------------------------------------------------------------------------
 #pragma once
 
@@ -17,9 +17,9 @@
 namespace mtl {
 
 /// Type helper
-template<typename I, int... Layers> struct BPNNType;
+template<typename I, int... Layers> struct RNNType;
 template<std::size_t... I, int... Layers>
-struct BPNNType<std::index_sequence<I...>, Layers...>
+struct RNNType<std::index_sequence<I...>, Layers...>
 {
     typedef /// Weights type
     std::tuple<
@@ -38,11 +38,20 @@ struct BPNNType<std::index_sequence<I...>, Layers...>
                     UnpackInts<I + 1, Layers...>::value
             >...
     > Thresholds;
+
+    typedef /// RWeights type
+    std::tuple<
+            Matrix<
+                    double,
+                    UnpackInts<I, Layers...>::value,
+                    UnpackInts<I, Layers...>::value
+            >...
+    > RWeights;
 };
 
 /// The neural network class
 template<int... Layers>
-class BPNN
+class RNN_N
 {
     static const int N = sizeof...(Layers);
     using expander = int[];
@@ -53,10 +62,11 @@ public:
 public:
     void init();
 
-    template<class LX, class LY, class W, class T>
-    void forward(LX& layerX, LY& layerY, W& weight, T& threshold);
-    template<class LX, class W, class T, class DX, class DY>
-    void reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, DY& deltaY);
+    template<class LX, class LY, class W, class T, class RLY, class RW>
+    void forward(LX& layerX, LY& layerY, W& weight, T& threshold, RLY& rLayerY, RW& rWeight);
+    template<class LX, class W, class T, class DX, class DY, class RLY, class RWX, class RWY, class RDX>
+    void reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, DY& deltaY, RLY& rLayerY,
+                 RWX& rWeightX, RWY& rWeightY, RDX& rDeltaX);
 
     template<std::size_t... I>
     bool train(const InMatrix& input, const OutMatrix& output, int times, double nor, std::index_sequence<I...>);
@@ -72,9 +82,12 @@ public:
 
 public:
     std::tuple<Matrix<double, 1, Layers>...> m_layers;
-    typename BPNNType<std::make_index_sequence<N - 1>, Layers...>::Weights m_weights;
-    typename BPNNType<std::make_index_sequence<N - 1>, Layers...>::Thresholds m_thresholds;
-    std::tuple<Matrix<double, 1, Layers>...> m_deltas;
+    std::tuple<Matrix<double, 1, Layers>...> m_rLayers;
+    typename RNNType<std::make_index_sequence<N - 1>, Layers...>::Weights m_weights;
+    typename RNNType<std::make_index_sequence<N - 1>, Layers...>::Thresholds m_thresholds;
+    typename RNNType<std::make_index_sequence<N>, Layers...>::RWeights m_rWeights;  /// redundance 1
+    std::tuple<Matrix<double, 1, Layers>...> m_deltas; /// redundance 1
+    std::tuple<Matrix<double, 1, Layers>...> m_rDeltas; /// redundance 1
     OutMatrix m_aberrmx;
 
 public:
@@ -84,4 +97,4 @@ public:
 
 }
 
-#include "BPNN.inl"
+#include "RNN_N.inl"
