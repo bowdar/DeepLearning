@@ -10,15 +10,15 @@ int main()
     rnn.init(0.1, 0.8);
 
     /// 3. 输入，循环网络支持多输入多输出，InMatrix<10>表示10组输入
-    MyRnn::InMatrix<10> inMatrix;
-    MyRnn::OutMatrix<1> outMatrix;
-	MyRnn::OutMatrix<1> expMatrix;
+    MyRnn::InMatrix<10> inMx;
+    MyRnn::OutMatrix<1> outMx;
+	MyRnn::OutMatrix<1> expectMx;
     ///    录入你的矩阵数据...
 	
     /// 4. 训练
-    rnn.train(inMatrix, outMatrix, 100);
+    rnn.train(inMx, outMx, 100);
 	
     /// 5. 仿真
-    rnn.simulate(inMatrix, outMatrix，expMatrix);
+    rnn.simulate(inMx, outMx，expectMx);
 }
 
