@@ -60,13 +60,17 @@ int main()
 
 
 3) LSTM
+
 coding ...
 
 4) CNN
+
 coming soon ...
 
 5) instance of MNIST
+
 planning ...
 
 6) Future
+
 VGG, RCNN, GAN ...
