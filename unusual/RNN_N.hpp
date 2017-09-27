@@ -7,10 +7,10 @@
 //-------------------------------------------------------------------------------
 #pragma once
 
-#include "math/sigfunc.h"
-#include "math/Matrix.hpp"
-#include "util/UnpackArgs.hpp"
-#include "util/TupleTool.hpp"
+#include "../math/sigfunc.h"
+#include "../math/Matrix.hpp"
+#include "../util/UnpackArgs.hpp"
+#include "../util/TupleTool.hpp"
 #include <tuple>
 #include <utility>
 
