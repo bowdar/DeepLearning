@@ -79,10 +79,8 @@ bool RNN<Layers...>::train(IN& input, OUT& output, int times, double nor, std::i
     {   /// 1. 正向传播
         for(int t = 0; t < r; ++t)
         {   /// 1.1 依次取input的每一层作为当前输入层
-            input.subset(layer0, t, 0);
-            /// 1.2 输入归一化
+            layer0.subset(input, t, 0);
             layer0.normalize(nor);
-            /// 1.3 传播
             expander {(forward(std::get<I>(m_layers),
                                std::get<I + 1>(m_layers),
                                std::get<I>(m_weights),
@@ -91,12 +89,12 @@ bool RNN<Layers...>::train(IN& input, OUT& output, int times, double nor, std::i
                                std::get<I>(states),
                                t, input.Row()),
                                0)...};
-            /// 1.4 计算出的out依次赋给output的每一层
+            /// 1.2 计算出的out依次赋给output的每一层
             if(t >= input.Row())
             {   trainOut.set(layerN, t - input.Row(), 0);
             }
         }
-        /// 2. 判断误差
+        /// 2. 判断误差，这里是多个输出的总误差
         double error = aberration.subtract(output, trainOut).squariance() / 2;
         if (error < m_aberration) break;
         /// 3. 反向修正

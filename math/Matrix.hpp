@@ -266,7 +266,7 @@ public:
     void subset(Matrix<DataType, R, C> m, int offsetR, int offsetC = 0)
     {   for(int r = offsetR; r < R; ++r)
         {   for (int c = offsetC; c < C; ++c)
-            {   m.data[r - offsetR][c - offsetC] = data[r][c];
+            {   data[r - offsetR][c - offsetC] = m.data[r][c];
             }
         }
     };
