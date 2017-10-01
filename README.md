@@ -4,7 +4,7 @@ Compile-time matrix constructions 构造编译期矩阵以及数据传递代码
 headonly, no dependency, limitless layers, limitless nodes 纯头文件，无依赖，任意深度，允许超大结点数
 
 Usage, the process is very simple 使用方法，过程极其简单
-1) BPNN
+### 1) BPNN
 ```cpp
 #include "BPNN.hpp"
 int main()
@@ -35,7 +35,7 @@ int main()
 }
 ```
 
-2) RNN
+### 2) RNN
 ```cpp
 #include "RNN.hpp"
 int main()
@@ -68,18 +68,18 @@ int main()
 ```
 
 
-3) LSTM
+### 3) LSTM
 
 coding ...
 
-4) CNN
+### 4) CNN
 
 coming soon ...
 
-5) instance of MNIST
+### 5) instance of MNIST
 
 planning ...
 
-6) Future
+### 6) Future
 
 VGG, RCNN, GAN ...
