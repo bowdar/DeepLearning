@@ -45,7 +45,7 @@ void BPNN<Layers...>::forward(LX& layerX, LY& layerY, W& weight, T& threshold)
     layerY.multiply(layerX, weight); /// layerY = layerX * weight
     layerY.foreach([&layerX](auto& e){ return e / layerX.Col();}); /// 用于支持超大节点数
     layerY += threshold;
-    layerY.foreach(logsig);
+    layerY.foreach(m_sigfunc);
 };
 
 template<int... Layers>
@@ -56,7 +56,7 @@ void BPNN<Layers...>::reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, D
     threshold.adjustT(deltaY, m_learnrate);
     /// 计算delta
     deltaX.mult_trans(weight, deltaY);
-    layerX.foreach(dlogsig);
+    layerX.foreach(m_dsigfunc);
     deltaX.hadamard(layerX);
 };
 

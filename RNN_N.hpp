@@ -1,6 +1,8 @@
 //-------------------------------------------------------------------------------
 // @brief
-//     Recursion deep neural network
+//     Recurrent deep neural network
+//     Different from RNN, the in and out of RNN_N is all in circulate and only
+//  support 1:1 mode
 //
 // @author
 //     Millhaus.Chen @time 2017/09/02 16:34
@@ -11,6 +13,8 @@
 #include "../math/Matrix.hpp"
 #include "../util/UnpackArgs.hpp"
 #include "../util/TupleTool.hpp"
+#include "include/Parameter.hpp"
+
 #include <tuple>
 #include <utility>
 
@@ -51,7 +55,7 @@ struct RNNType<std::index_sequence<I...>, Layers...>
 
 /// The neural network class
 template<int... Layers>
-class RNN_N
+class RNN_N : NNParam
 {
     static const int N = sizeof...(Layers);
     using expander = int[];
@@ -60,7 +64,7 @@ public:
     using OutMatrix = Matrix<double, 1, UnpackInts<N - 1, Layers...>::value>;
 
 public:
-    void init();
+    RNN_N<Layers...>& init();
 
     template<class LX, class LY, class W, class T, class RLY, class RW>
     void forward(LX& layerX, LY& layerY, W& weight, T& threshold, RLY& rLayerY, RW& rWeight);
@@ -89,12 +93,8 @@ public:
     std::tuple<Matrix<double, 1, Layers>...> m_deltas; /// redundance 1
     std::tuple<Matrix<double, 1, Layers>...> m_rDeltas; /// redundance 1
     OutMatrix m_aberrmx;
-
-public:
-    double m_aberration = 0.001;
-    double m_learnrate = 0.1;
 };
 
 }
 
-#include "RNN_N.inl"
+#include "include/RNN_N.inl"

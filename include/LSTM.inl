@@ -5,7 +5,7 @@
 namespace mtl {
 
 template<int... Layers>
-void LSTM<Layers...>::init()
+LSTM<Layers...>& LSTM<Layers...>::init()
 {
     using namespace lstm;
     mtl::for_each(m_weights, [](auto& weight) mutable
@@ -20,6 +20,8 @@ void LSTM<Layers...>::init()
     std::get<0>(m_rLayers).constant(0);
     std::get<0>(m_rCells).constant(0);
     std::get<N - 2>(m_rDeltas).constant(0);
+	
+	return *this;
 }
 
 template<int... Layers>
@@ -77,7 +79,7 @@ bool LSTM<Layers...>::train(const InMatrix& input, const OutMatrix& output, int 
     layer0 = input;
     layer0.normalize(nor);
     auto& layerN = std::get<N - 1>(m_layers);
-    auto& deltaN = std::get<N - 1>(m_deltas);
+    //auto& deltaN = std::get<N - 1>(m_deltas);
     for(int i = 0; i < times; ++i)
     {   /// 2. 正向传播
         expander {(forward(std::get<I>(m_layers),

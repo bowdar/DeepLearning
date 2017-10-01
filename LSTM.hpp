@@ -11,6 +11,8 @@
 #include "math/Matrix.hpp"
 #include "util/UnpackArgs.hpp"
 #include "util/TupleTool.hpp"
+#include "include/Parameter.hpp"
+
 #include <tuple>
 #include <utility>
 
@@ -62,7 +64,7 @@ namespace lstm
 
 /// The LSTM neural network class
 template<int... Layers>
-class LSTM
+class LSTM : public NNParam
 {
     static const int N = sizeof...(Layers);
     using expander = int[];
@@ -71,7 +73,7 @@ public:
     using OutMatrix = Matrix<double, 1, UnpackInts<N - 1, Layers...>::value>;
 
 public:
-    void init();
+    LSTM<Layers...>& init();
 
     template<class LX, class LY, class W, class T, class RLY, class RW, class CY, class RCY, class TP>
     void forward(LX& layerX, LY& layerY, W& weight, T& threshold, RLY& rLayerY, RW& rWeight, CY& cellY, RCY& rCellY, TP& t);
@@ -103,12 +105,8 @@ public:
     std::tuple<Matrix<double, 1, Layers>...> m_deltas; /// redundance 1
     std::tuple<Matrix<double, 1, Layers>...> m_rDeltas; /// redundance 1
     OutMatrix m_aberrmx;
-
-public:
-    double m_aberration = 0.001;
-    double m_learnrate = 0.1;
 };
 
 }
 
-#include "LSTM.inl"
+#include "include/LSTM.inl"

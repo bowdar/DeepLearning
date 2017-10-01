@@ -1,6 +1,7 @@
 //-------------------------------------------------------------------------------
 // @brief
-//     Recursion deep neural network
+//     Recurrent deep neural network
+//     Support M:1, 1:M, M:M in and out certainly 1: 1
 //
 // @author
 //     Millhaus.Chen @time 2017/09/02 16:34
@@ -11,6 +12,8 @@
 #include "math/Matrix.hpp"
 #include "util/UnpackArgs.hpp"
 #include "util/TupleTool.hpp"
+#include "include/Parameter.hpp"
+
 #include <tuple>
 #include <utility>
 
@@ -65,7 +68,7 @@ namespace rnn
 }
 /// The neural network class
 template<int... Layers>
-class RNN
+class RNN : public NNParam
 {
     static const int N = sizeof...(Layers);
     using expander = int[];
@@ -81,7 +84,7 @@ public:
                              UnpackInts<N - 1, Layers...>::value>;
 
 public:
-    void init();
+    RNN<Layers...>& init();
 
     template<class LX, class LY, class W, class T, class RW, class S>
     void forward(LX& layerX, LY& layerY, W& weight, T& threshold, RW& rWeight, S& state, int t, int rIn);
@@ -109,12 +112,8 @@ public:
     typename rnn::Type<std::make_index_sequence<N - 1>, Layers...>::Thresholds m_thresholds;
     typename rnn::Type<std::make_index_sequence<N>, Layers...>::RWeights m_rWeights;  /// redundance 1
     std::tuple<Matrix<double, 1, Layers>...> m_deltas; /// redundance 1
-
-public:
-    double m_aberration = 0.001;
-    double m_learnrate = 0.1;
 };
 
 }
 
-#include "RNN.inl"
+#include "include/RNN.inl"

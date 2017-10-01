@@ -5,7 +5,7 @@
 namespace mtl {
 
 template<int... Layers>
-void RNN_N<Layers...>::init()
+RNN_N<Layers...>& RNN_N<Layers...>::init()
 {
     mtl::for_each(m_weights, [](auto& weight) mutable
     {   weight.random(0, 1);
@@ -18,6 +18,8 @@ void RNN_N<Layers...>::init()
     });
     std::get<0>(m_rLayers).constant(0);
     std::get<N - 2>(m_rDeltas).constant(0);
+	
+	return *this;
 }
 
 template<int... Layers>
@@ -28,7 +30,7 @@ void RNN_N<Layers...>::forward(LX& layerX, LY& layerY, W& weight, T& threshold, 
     layerY.mult_sum(rLayerY, rWeight);
     layerY.foreach([&layerX](auto& e){ return e / layerX.Col();});
     layerY += threshold;
-    layerY.foreach(logsig);
+    layerY.foreach(m_sigfunc);
     rLayerY = layerY;
 };
 
@@ -43,7 +45,7 @@ void RNN_N<Layers...>::reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, 
     /// 计算delta
     deltaX.mult_trans(weight, deltaY);
     deltaX.mult_trans_sum(rWeightX, rDeltaX);
-    layerX.foreach(dlogsig);
+    layerX.foreach(m_dsigfunc);
     deltaX.hadamard(layerX);
     rDeltaX = deltaX;
 };

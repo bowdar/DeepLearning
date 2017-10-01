@@ -5,7 +5,7 @@
 namespace mtl {
 
 template<int... Layers>
-void RNN<Layers...>::init()
+RNN<Layers...>& RNN<Layers...>::init()
 {
     mtl::for_each(m_weights, [](auto& weight) mutable
     {   weight.random(0, 1);
@@ -16,6 +16,8 @@ void RNN<Layers...>::init()
     mtl::for_each(m_rWeights, [](auto& rWeight) mutable
     {   rWeight.random(0, 1);
     });
+	
+	return *this;
 }
 
 template<int... Layers>
@@ -26,7 +28,7 @@ void RNN<Layers...>::forward(LX& layerX, LY& layerY, W& weight, T& threshold, RW
     if(t > 0) layerY.mult_sum(state[t - 1], rWeight); /// 循环中的第一个不累加上一个时刻的状态
     //layerY.foreach([&layerX](auto& e){ return e / layerX.Col();});
     layerY += threshold;
-    layerY.foreach(logsig);
+    layerY.foreach(m_sigfunc);
     state[t] = layerY;
 };
 
@@ -43,11 +45,11 @@ void RNN<Layers...>::reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, DY
     } else if(t >= rIn)
     {   /// 对应输出的时刻
         delta[t] = deltaY;
-        delta[t].mult_trans(rWeight, state[t + 1].foreach(dlogsig));
+        delta[t].mult_trans(rWeight, state[t + 1].foreach(m_dsigfunc));
         deltaY.hadamard_sum(delta[t], state[t]);
     } else
     {   /// 对应输入的时刻
-        delta[t].mult_trans(rWeight, state[t + 1].foreach(dlogsig));
+        delta[t].mult_trans(rWeight, state[t + 1].foreach(m_dsigfunc));
         delta[t].hadamard(delta[t + 1]);
         deltaY.hadamard_sum(delta[t], state[t]);
     }
@@ -57,7 +59,7 @@ void RNN<Layers...>::reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, DY
         threshold.adjustT(deltaY, m_learnrate);
         /// 计算上一层最后一个delta
         deltaX.mult_trans(weight, deltaY);
-        deltaX.hadamard(layerX.foreach(dlogsig));
+        deltaX.hadamard(layerX.foreach(m_dsigfunc));
     }
 };
 
