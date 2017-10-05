@@ -1,14 +1,10 @@
-# Meta-programming neural network 元编程神经网络
+﻿#include "BPNN.hpp"
+#include "RNN.hpp"
+#include "LSTM.hpp"
 
-Compile-time matrix constructions 构造编译期矩阵以及数据传递代码  
-headonly, no dependency, limitless layers, limitless nodes 纯头文件，无依赖，任意深度，允许超大结点数
-
-Usage, the process is very simple 使用方法，过程极其简单
-### 1) BPNN
-```cpp
-#include "BPNN.hpp"
 int main()
 {
+    /// -- BPNN --------------------------------------------------------------------
     /// 1. Create a 4 layers NN each layer nodes are 20, 30, 20 and 2
     ///    The first 20 is input layer and the last 2 is output
     typedef mtl::BPNN<20, 30, 20, 2> MyNN;
@@ -32,14 +28,9 @@ int main()
     
     /// 5. Simulate
     bpnn.simulate(inMx, outMx, expectMx);
-}
-```
 
-### 2) RNN
-```cpp
-#include "RNN.hpp"
-int main()
-{
+
+    /// -- RNN ---------------------------------------------------------------------
     /// 1. Create a 4 layers NN each layer nodes are 20, 30, 20 and 2
     ///    The first 20 is input layer and the last 2 is output
     typedef mtl::RNN<20, 30, 20, 2> MyRnn;
@@ -64,14 +55,9 @@ int main()
     
     /// 5. Simulate
     rnn.simulate(inMx, outMx，expectMx);
-}
-```
 
-### 3) LSTM
-```cpp
-#include "LSTM.hpp"
-int main()
-{
+    
+    /// -- LSTM --------------------------------------------------------------------
     /// 1. Create a 4 layers NN each layer nodes are 20, 30, 20 and 2
     ///    The first 20 is input layer and the last 2 is output
     typedef mtl::LSTM<20, 30, 20, 2> MyLSTM;
@@ -95,16 +81,4 @@ int main()
     /// 5. Simulate
     rnn.simulate(inMx, outMx，expectMx);
 }
-```
 
-### 4) CNN
-
-coming soon ...
-
-### 5) instance of MNIST
-
-planning ...
-
-### 6) Future
-
-VGG, RCNN, GAN ...
