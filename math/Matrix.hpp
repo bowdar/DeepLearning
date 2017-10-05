@@ -64,8 +64,8 @@ public:
     void normalize(DataType max = 0)
     {   if(max == 0)
         {   foreach_c([&max](auto &e){ if (std::abs(e) > max) max = std::abs(e); });
+            return;
         }
-        if(max == 0) return;
         foreach([max](auto& e){ return (e / max); });
     }
 

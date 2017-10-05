@@ -69,7 +69,7 @@ public:
     template<class LX, class LY, class W, class T, class RLY, class RW>
     void forward(LX& layerX, LY& layerY, W& weight, T& threshold, RLY& rLayerY, RW& rWeight);
     template<class LX, class W, class T, class DX, class DY, class RLY, class RWX, class RWY, class RDX>
-    void reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, DY& deltaY, RLY& rLayerY,
+    void backward(LX& layerX, W& weight, T& threshold, DX& deltaX, DY& deltaY, RLY& rLayerY,
                  RWX& rWeightX, RWY& rWeightY, RDX& rDeltaX);
 
     template<std::size_t... I>

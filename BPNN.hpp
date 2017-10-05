@@ -48,6 +48,7 @@ class BPNN : public NNParam
 {
     static const int N = sizeof...(Layers);
     using expander = int[];
+
 public:
     using InMatrix = Matrix<double, 1, UnpackInts<0, Layers...>::value>;
     using OutMatrix = Matrix<double, 1, UnpackInts<N - 1, Layers...>::value>;
@@ -58,7 +59,7 @@ public:
     template<class LX, class LY, class W, class T>
     void forward(LX& layerX, LY& layerY, W& weight, T& threshold);
     template<class LX, class W, class T, class DX, class DY>
-    void reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, DY& deltaY);
+    void backward(LX& layerX, W& weight, T& threshold, DX& deltaX, DY& deltaY);
 
     template<std::size_t... I>
     bool train(const InMatrix& input, const OutMatrix& output, int times, double nor, std::index_sequence<I...>);

@@ -54,10 +54,9 @@ namespace rnn
                 >...
         > RWeights;
 
-        /// Temps type
+        /// Temp states type
         template<int R>
-        using Temps =
-        std::tuple<
+        using Temps = std::tuple<
                 Matrix<
                         double,
                         1,
@@ -75,9 +74,9 @@ class RNN : public NNParam
 
 public:
     template<int R>
-    using InMatrix = Matrix<double,
-                            R,
-                            UnpackInts<0, Layers...>::value>;
+    using  InMatrix = Matrix<double,
+                             R,
+                             UnpackInts<0, Layers...>::value>;
     template<int R>
     using OutMatrix = Matrix<double,
                              R,
@@ -88,9 +87,9 @@ public:
 
     template<class LX, class LY, class W, class T, class RW, class S>
     void forward(LX& layerX, LY& layerY, W& weight, T& threshold, RW& rWeight, S& state, int t, int rIn);
-    template<class LX, class W, class T, class DX, class DY, class RW, class S, class DT>
-    void reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, DY& deltaY, RW& rWeight,
-                 S& state, DT& delta, int t, int r, int rIn);
+    template<class LX, class W, class T, class DX, class DY, class RW, class S, class RD>
+    void backward(LX& layerX, W& weight, T& threshold, DX& deltaX, DY& deltaY, RW& rWeight,
+                 S& state, RD& rDelta, int t, int r, int rIn);
 
     template<class IN, class OUT, std::size_t... I>
     bool train(IN& input, OUT& output, int times, double nor, std::index_sequence<I...>);
@@ -108,10 +107,10 @@ public:
 
 public:
     std::tuple<Matrix<double, 1, Layers>...> m_layers;
+    std::tuple<Matrix<double, 1, Layers>...> m_deltas; /// redundance 1
     typename rnn::Type<std::make_index_sequence<N - 1>, Layers...>::Weights m_weights;
     typename rnn::Type<std::make_index_sequence<N - 1>, Layers...>::Thresholds m_thresholds;
     typename rnn::Type<std::make_index_sequence<N>, Layers...>::RWeights m_rWeights;  /// redundance 1
-    std::tuple<Matrix<double, 1, Layers>...> m_deltas; /// redundance 1
 };
 
 }

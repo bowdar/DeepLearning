@@ -36,7 +36,7 @@ void RNN_N<Layers...>::forward(LX& layerX, LY& layerY, W& weight, T& threshold, 
 
 template<int... Layers>
 template<class LX, class W, class T, class DX, class DY, class RLY, class RWX, class RWY, class RDX>
-void RNN_N<Layers...>::reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, DY& deltaY, RLY& rLayerY,
+void RNN_N<Layers...>::backward(LX& layerX, W& weight, T& threshold, DX& deltaX, DY& deltaY, RLY& rLayerY,
                              RWX& rWeightX, RWY& rWeightY, RDX& rDeltaX)
 {
     weight.adjustW(layerX, deltaY, m_learnrate);
@@ -74,7 +74,7 @@ bool RNN_N<Layers...>::train(const InMatrix& input, const OutMatrix& output, int
         if (aberration < m_aberration) break;
         /// 4. 反向修正
         deltaN.hadamard(m_aberrmx, layerN.foreach(dlogsig));
-        expander {(reverse(std::get<N - I - 2>(m_layers),
+        expander {(backward(std::get<N - I - 2>(m_layers),
                            std::get<N - I - 2>(m_weights),
                            std::get<N - I - 2>(m_thresholds),
                            std::get<N - I - 2>(m_deltas),

@@ -5,7 +5,7 @@
 namespace mtl {
 
 template<int... Layers>
-void BPNN<Layers...>::init()
+BPNN<Layers...>& BPNN<Layers...>::init()
 {
     mtl::for_each(m_weights, [](auto& weight) mutable
     {   weight.random(0, 1);
@@ -14,6 +14,8 @@ void BPNN<Layers...>::init()
     mtl::for_each(m_thresholds, [](auto& threshold) mutable
     {   threshold.random(0, 1);
     });
+
+    return *this;
 }
 
 template<class T>
@@ -50,7 +52,7 @@ void BPNN<Layers...>::forward(LX& layerX, LY& layerY, W& weight, T& threshold)
 
 template<int... Layers>
 template<class LX, class W, class T, class DX, class DY>
-void BPNN<Layers...>::reverse(LX& layerX, W& weight, T& threshold, DX& deltaX, DY& deltaY)
+void BPNN<Layers...>::backward(LX& layerX, W& weight, T& threshold, DX& deltaX, DY& deltaY)
 {
     weight.adjustW(layerX, deltaY, m_learnrate);
     threshold.adjustT(deltaY, m_learnrate);
@@ -86,12 +88,12 @@ bool BPNN<Layers...>::train(const InMatrix& input, const OutMatrix& output, int 
         if (aberration < m_aberration) break;
         /// 4. 反向修正
         deltaN.hadamard(m_aberrmx, layerN.foreach(dlogsig));
-        expander {(reverse(std::get<N - I - 2>(m_layers),
-                           std::get<N - I - 2>(m_weights),
-                           std::get<N - I - 2>(m_thresholds),
-                           std::get<N - I - 2>(m_deltas),
-                           std::get<N - I - 1>(m_deltas)),
-                           0)...};
+        expander {(backward(std::get<N - I - 2>(m_layers),
+                            std::get<N - I - 2>(m_weights),
+                            std::get<N - I - 2>(m_thresholds),
+                            std::get<N - I - 2>(m_deltas),
+                            std::get<N - I - 1>(m_deltas)),
+                            0)...};
     }
     return false;
 }
