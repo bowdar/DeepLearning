@@ -1,7 +1,15 @@
-# Meta-programming neural network 元编程神经网络
+# [DeepLearning](https://github.com/bowdar/DeepLearning) 
+Meta-programming neural network 是一个基于C++14实现的元编程神经网络库
+Compile-time matrix constructions, headonly, no dependency, limitless layers, limitless nodes
+ 
 
-Compile-time matrix constructions 构造编译期矩阵以及数据传递代码  
-headonly, no dependency, limitless layers, limitless nodes 纯头文件，无依赖，任意深度，允许超大结点数
+## 特点
+* 任意深度
+* 支持超大结点数
+* 矩阵运算（CNN采用张量运算）
+* 无依赖
+* Header only
+* GPU支持还在计划中
 
 Usage, the process is very simple 使用方法，过程极其简单
 ### 1) BPNN
@@ -99,12 +107,12 @@ int main()
 
 ### 4) CNN
 
-coming soon ...
+coding ...
 
 ### 5) instance of MNIST
 
-planning ...
+coming soon ...
 
-### 6) Future
+### 7) Future
 
-VGG, RCNN, GAN ...
+Custom network structure like VGG, RCNN, GAN ... and GPU support
