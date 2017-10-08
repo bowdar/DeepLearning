@@ -2,16 +2,15 @@
 Meta-programming neural network 是一个基于C++14实现的元编程神经网络库
 Compile-time matrix constructions, headonly, no dependency, limitless layers, limitless nodes
  
-
-## 特点
-* 任意深度
-* 支持超大结点数
+## Feature
+* 支持任意深度和超大结点数
 * 矩阵运算（CNN采用张量运算）
-* 无依赖
-* Header only
-* 使用方法极其简单
+* 循环类网络输入输出支持多对单、单对多、多对多
+* 源码Head-only并且无依赖
+* 使用方法极其简单，适合程序局部应用ANN以及用来学习研究
 * GPU支持还在计划中
 
+## Sample
 ### 1) BPNN
 ```cpp
 #include "BPNN.hpp"
