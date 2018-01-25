@@ -8,7 +8,6 @@ Compile-time matrix constructions, headonly, no dependency, limitless layers, li
 * 循环类网络输入输出支持多对单、单对多、多对多
 * 源码Head-only并且无依赖
 * 使用方法极其简单，适合程序局部应用ANN以及用来学习研究
-* GPU支持还在计划中
 
 ## Sample
 ### 1) BPNN
@@ -103,19 +102,3 @@ int main()
     lstm.simulate(inMx, outMx，expectMx);
 }
 ```
-
-### 4) CNN
-
-coding ...
-
-### 5) instance of MNIST
-
-coming soon ...
-
-### 6) GPU support
-
-planning ...
-
-### 7) Future
-
-RCNN, GAN and custom cnn structure like VGG, ResNet, DenseNet ... 
